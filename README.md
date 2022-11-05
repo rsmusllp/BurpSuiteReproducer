@@ -24,7 +24,7 @@ To generate the final simplified request you can select what to include or not i
 
 Once you are ready to test your simplified request you can click the "Create Simplified Request" button. This will remove the items that are not included and send the request. Results can be viewed in the "Simplified" request/response viewer tab.
 
-You can then right-click on the simplified request and use the built-in "Copy to Curl" or use one of the "reproduce in Other Tools" features.
+You can then right-click on the simplified request and use the built-in "Copy to Curl" or use one of the "Reproduce in Other Tools" features.
 
 # Bug Reporting
 Any issues created for bugs encountered while using the extension would be greatly appreciated.
