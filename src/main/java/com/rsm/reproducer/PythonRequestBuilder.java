@@ -111,7 +111,6 @@ public class PythonRequestBuilder {
 
     private BodyType processBody(String prefix, StringBuilder py,
                                  HttpRequest request) {
-        api.logging().logToOutput("Length: " + request.body().length);
         if (request.body().length == 0) return null;
         py.append('\n').append(prefix);
         ContentType contentType = request.contentType();
