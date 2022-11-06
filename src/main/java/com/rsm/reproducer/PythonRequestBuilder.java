@@ -51,7 +51,8 @@ public class PythonRequestBuilder {
 
         if (!(SUPPORTED_METHODS.contains(request.method()))) {
             JOptionPane.showMessageDialog(new JFrame(), "The \"" + StringUtils.abbreviate(request.method(), 16)
-                    + "\" method is not supported by PowerShell Invoke-WebRequest.", "Error", JOptionPane.ERROR_MESSAGE);
+                    + "\" method is not supported by Python Requests.", "Error", JOptionPane.ERROR_MESSAGE);
+            return new StringBuilder("The request method is not supported.");
         }
 
         String requestsMethodPrefix = "\nrequests.";

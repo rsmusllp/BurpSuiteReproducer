@@ -14,15 +14,16 @@ import burp.api.montoya.ui.editor.HttpResponseEditor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
 
 public class ReproducerTab {
@@ -46,8 +47,8 @@ public class ReproducerTab {
     private final DefaultTableModel requestSelectorTableModel;
 
 
-    private static final Object[] REQUEST_SELECTOR_HEADERS = new Object[]{"Original HRR", "Simplified HRR", "Analyze Table", "Method", "URL", "Response Code", "Length"};
-    private static final Object[] ANALYZE_HEADERS = new Object[]{"Analyze HRR", "Type", "Name", "Value", "Include", "Response Code", "Length"};
+    private static final Object[] REQUEST_SELECTOR_HEADERS = new Object[]{"Original HRR", "Simplified HRR", "Analyze Table", "Method", "URL", "Response Code", "Length", "\u26A0\uFE0F"};
+    private static final Object[] ANALYZE_HEADERS = new Object[]{"Analyze HRR", "Type", "Name", "Value", "Include", "Response Code", "Length", "\u26A0\uFE0F"};
 
     MontoyaApi api;
 
@@ -122,18 +123,35 @@ public class ReproducerTab {
         requestSelectorTable.removeColumn(requestSelectorTable.getColumnModel().getColumn(0));
         requestSelectorTable.removeColumn(requestSelectorTable.getColumnModel().getColumn(0));
 
+        requestSelectorTable.getColumnModel().getColumn(4).setCellRenderer(
+                new DefaultTableCellRenderer() {
+                    @Override
+                    public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                        super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                        if (value != null && !((String) value).isEmpty()) {
+                            this.setText("\u26A0\uFE0F");
+                            this.setToolTipText(value.toString());
+                        } else {
+                            this.setToolTipText(null);
+                        }
+                        return this;
+                    }
+                });
+
         // Set sizing
         topSplitPane.setResizeWeight(0.5);
         requestSelectorTable.getColumnModel().getColumn(0).setPreferredWidth(150);
         requestSelectorTable.getColumnModel().getColumn(1).setPreferredWidth(700);
         requestSelectorTable.getColumnModel().getColumn(2).setPreferredWidth(200);
         requestSelectorTable.getColumnModel().getColumn(3).setPreferredWidth(150);
+        requestSelectorTable.getColumnModel().getColumn(4).setPreferredWidth(50);
         analyzeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         analyzeTable.getColumnModel().getColumn(1).setPreferredWidth(300);
         analyzeTable.getColumnModel().getColumn(2).setPreferredWidth(300);
         analyzeTable.getColumnModel().getColumn(3).setPreferredWidth(100);
         analyzeTable.getColumnModel().getColumn(4).setPreferredWidth(150);
         analyzeTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+        analyzeTable.getColumnModel().getColumn(6).setPreferredWidth(50);
 
         // Only allow one row to be selected
         requestSelectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -158,12 +176,27 @@ public class ReproducerTab {
 
                 analyzeTable.setModel((DefaultTableModel) requestSelectorTableModel.getValueAt(modelRow, 2));
                 analyzeTable.removeColumn(analyzeTable.getColumnModel().getColumn(0));
+                analyzeTable.getColumnModel().getColumn(6).setCellRenderer(
+                        new DefaultTableCellRenderer() {
+                            @Override
+                            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                                super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                                if (value != null && !((String) value).isEmpty()) {
+                                    this.setText("\u26A0\uFE0F");
+                                    this.setToolTipText(value.toString());
+                                } else {
+                                    this.setToolTipText(null);
+                                }
+                                return this;
+                            }
+                        });
                 analyzeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
                 analyzeTable.getColumnModel().getColumn(1).setPreferredWidth(300);
                 analyzeTable.getColumnModel().getColumn(2).setPreferredWidth(300);
                 analyzeTable.getColumnModel().getColumn(3).setPreferredWidth(100);
                 analyzeTable.getColumnModel().getColumn(4).setPreferredWidth(150);
                 analyzeTable.getColumnModel().getColumn(5).setPreferredWidth(100);
+                analyzeTable.getColumnModel().getColumn(6).setPreferredWidth(50);
             }
         });
 
@@ -528,11 +561,39 @@ public class ReproducerTab {
                 HttpRequest modifiedRequest = request.removeHeader(header);
                 HttpRequestResponse modifiedHrr = HttpRequestResponse.httpRequestResponse(modifiedRequest, null);
 
-                analyzeTableModel.addRow(new Object[]{modifiedHrr, "HEADER", header.name(), header.value(), true, null, null});
+                StringJoiner analyzeSupportMessage = new StringJoiner("\n");
+                for (String skipHeader : PowerShellBuilder.SKIP_HEADERS) {
+                    if (header.name().equalsIgnoreCase(skipHeader)) {
+                        analyzeSupportMessage.add(header.name() + " is unsupported in PowerShell");
+                    }
+                }
+                for (String skipHeader : JavaScriptRequestBuilder.SKIP_HEADERS) {
+                    if (header.name().equalsIgnoreCase(skipHeader)) {
+                        analyzeSupportMessage.add(header.name() + " is unsupported in JavaScript Fetch");
+                    }
+                }
+                for (String skipHeader : JavaScriptRequestBuilder.SKIP_HEADERS_PREFIX) {
+                    if (header.name().toLowerCase().startsWith(skipHeader)) {
+                        analyzeSupportMessage.add(header.name() + " is unsupported in JavaScript Fetch");
+                    }
+                }
+                for (String skipHeader : PythonRequestBuilder.SKIP_HEADERS) {
+                    if (header.name().equalsIgnoreCase(skipHeader)) {
+                        analyzeSupportMessage.add(header.name() + " is unsupported in Python Requests");
+                    }
+                }
+                analyzeTableModel.addRow(new Object[]{modifiedHrr, "HEADER", header.name(), header.value(), true, null, null, analyzeSupportMessage.toString()});
             }
         }
+        StringJoiner requestSupportMessage = new StringJoiner("\n");
+        if (!PowerShellBuilder.SUPPORTED_METHODS.contains(hrr.httpRequest().method().toUpperCase())) {
+            requestSupportMessage.add(hrr.httpRequest().method() + " is unsupported in PowerShell");
+        }
+        if (!PythonRequestBuilder.SUPPORTED_METHODS.contains(hrr.httpRequest().method().toUpperCase())) {
+            requestSupportMessage.add(hrr.httpRequest().method() + " is unsupported in Python Requests");
+        }
 
-        requestSelectorTableModel.addRow(new Object[]{hrr, simplifiedEditorDefault, analyzeTableModel, request.method(), request.url(), response.statusCode(), response.body().length});
+        requestSelectorTableModel.addRow(new Object[]{hrr, simplifiedEditorDefault, analyzeTableModel, request.method(), request.url(), response.statusCode(), response.body().length, requestSupportMessage.toString()});
 
         // Select the newly added row
         int lastRow = requestSelectorTable.convertRowIndexToView(requestSelectorTableModel.getRowCount() - 1);

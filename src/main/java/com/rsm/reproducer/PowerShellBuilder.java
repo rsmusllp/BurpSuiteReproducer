@@ -47,6 +47,7 @@ public class PowerShellBuilder {
         if (!(SUPPORTED_METHODS.contains(method))) {
             JOptionPane.showMessageDialog(new JFrame(), "The \"" + StringUtils.abbreviate(request.method(), 16)
                     + "\" method is not supported by PowerShell Invoke-WebRequest.", "Error", JOptionPane.ERROR_MESSAGE);
+            return new StringBuilder("The request method is not supported.");
         }
 
         stringBuilder.append("Add-Type -AssemblyName Microsoft.PowerShell.Commands.Utility").append(System.lineSeparator());

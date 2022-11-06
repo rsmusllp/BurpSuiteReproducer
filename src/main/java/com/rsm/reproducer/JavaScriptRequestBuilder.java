@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 public class JavaScriptRequestBuilder {
     // Taken from https://developer.mozilla.org/en-US/docs/Glossary/Forbidden_header_name
     public static final List<String> SKIP_HEADERS = List.of("accept-charset", "accept-Encoding", "access-control-request-headers", "access-control-request-method", "connection", "content-length", "cookie", "date", "dnt", "expect", "feature-policy", "host", "keep-alive", "origin", "referer", "te", "trailer", "transfer-encoding", "upgrade", "via");
+    public static final List<String> SKIP_HEADERS_PREFIX  = List.of("sec-", "proxy-");
     private final static String[] ESCAPE = new String[256];
 
     static {
@@ -35,7 +36,7 @@ public class JavaScriptRequestBuilder {
         List<ParsedHttpParameter> cookies = request.parameters().stream().filter(p -> p.type() == HttpParameterType.COOKIE).collect(Collectors.toList());
         boolean hasCookies = cookies.size() > 0;
         List<HttpHeader> filteredHeaders = request.headers().subList(1, request.headers().size())
-                .stream().filter(e -> !(SKIP_HEADERS.contains(e.name().toLowerCase())) && !StringUtils.startsWithAny(e.name().toLowerCase(), "sec-", "proxy-"))
+                .stream().filter(e -> !(SKIP_HEADERS.contains(e.name().toLowerCase())) && !StringUtils.startsWithAny(e.name().toLowerCase(), SKIP_HEADERS_PREFIX.toArray(new CharSequence[SKIP_HEADERS_PREFIX.size()])))
                 .collect(Collectors.toList());
         boolean hasHeaders = filteredHeaders.size() > 0;
         boolean hasBody = request.body().length > 0;
