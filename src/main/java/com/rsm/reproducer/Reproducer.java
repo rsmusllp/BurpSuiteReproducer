@@ -25,7 +25,7 @@
         public void initialize(MontoyaApi api)
         {
             this.api = api;
-            api.misc().setExtensionName(EXTENSION_NAME);
+            api.extension().setName(EXTENSION_NAME);
             api.logging().logToOutput(" == " + EXTENSION_NAME + " version " + VERSION + " == ");
             api.logging().logToOutput("Simplifier and formatter of requests to aid in finding reproduction and proof of concept creation.");
             api.logging().logToOutput("Created by Micah Van Deusen, RSM US LLP.");

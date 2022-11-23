@@ -228,7 +228,7 @@ public class ReproducerTab {
                         HttpRequestResponse updatedAnalyzeHrr = api.http().issueRequest(analyzeHrr.httpRequest());
                         analyzeTableModel.setValueAt(updatedAnalyzeHrr, i, 0);
                         analyzeTableModel.setValueAt(updatedAnalyzeHrr.httpResponse().statusCode(), i, 5);
-                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.httpResponse().body().length, i, 6);
+                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.httpResponse().body().length(), i, 6);
                     }
                     progressBar.setValue(100);
                     return null;
@@ -450,7 +450,7 @@ public class ReproducerTab {
                         JOptionPane.showMessageDialog(new JFrame(), "Analysis needs to be done before being able to perform this action.", "Error", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    if (analyzeHrr.httpResponse().body().length == originalHrr.httpResponse().body().length) {
+                    if (analyzeHrr.httpResponse().body().length() == originalHrr.httpResponse().body().length()) {
                         analyzeTableModel.setValueAt(false, i, 4);
                     } else {
                         analyzeTableModel.setValueAt(true, i, 4);
@@ -593,7 +593,7 @@ public class ReproducerTab {
             requestSupportMessage.add(hrr.httpRequest().method() + " is unsupported in Python Requests");
         }
 
-        requestSelectorTableModel.addRow(new Object[]{hrr, simplifiedEditorDefault, analyzeTableModel, request.method(), request.url(), response.statusCode(), response.body().length, requestSupportMessage.toString()});
+        requestSelectorTableModel.addRow(new Object[]{hrr, simplifiedEditorDefault, analyzeTableModel, request.method(), request.url(), response.statusCode(), response.body().length(), requestSupportMessage.toString()});
 
         // Select the newly added row
         int lastRow = requestSelectorTable.convertRowIndexToView(requestSelectorTableModel.getRowCount() - 1);

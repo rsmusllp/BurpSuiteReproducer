@@ -39,7 +39,7 @@ public class JavaScriptRequestBuilder {
                 .stream().filter(e -> !(SKIP_HEADERS.contains(e.name().toLowerCase())) && !StringUtils.startsWithAny(e.name().toLowerCase(), SKIP_HEADERS_PREFIX.toArray(new CharSequence[SKIP_HEADERS_PREFIX.size()])))
                 .collect(Collectors.toList());
         boolean hasHeaders = filteredHeaders.size() > 0;
-        boolean hasBody = request.body().length > 0;
+        boolean hasBody = request.body().length() > 0;
 
 
         if (hasCookies) {
@@ -69,7 +69,7 @@ public class JavaScriptRequestBuilder {
         if (hasBody && (!method.equals("GET") || !method.equals("HEAD"))) {
             StringBuilder body = new StringBuilder();
             body.append("body: '");
-            body.append(escapeBytes(request.body()));
+            body.append(escapeBytes(request.body().getBytes()));
             body.append("'");
             options.add(body);
         }
