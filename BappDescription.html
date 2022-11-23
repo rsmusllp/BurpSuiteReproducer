@@ -1,0 +1,24 @@
+<p>Reproducer is an extension designed to help with simplifying and reproducing findings outside of Burp Suite.
+    This can be used to provide information to developers, assist with creating proof of concepts,
+    or develop custom fuzzing with, for example, Python.</p>
+
+<p>Support for generating requests in the following formats (in addition to the built-in "Copy as curl command""):</p>
+<ol>
+    <li>JavaScript Fetch</li>
+    <li>Powershell</li>
+    <li>Python Requests</li>
+</ol>
+
+<p>The extension works by removing headers, parameters, and cookies and observing the response length and code compared to the original request.
+    With this it is possible to tell which are required. You can then select which of the headers, parameters,
+    and cookies you want to include in the final simplified request. Right-clicking in the "Analysis Results" table allows several options for auto including.</p>
+
+<p>The headers, parameters, and cookies analysis can also assist with identifying which are required for a request to be authenticated.
+    This can be used similar to the session analysis feature in the Paramalyzer extension but with header and parameter support as well.</p>
+
+<p>Usage:</p>
+<ol>
+    <li>Right-click a single request or multiple selected requests to open the context menu</li>
+    <li>Select Extensions &gt; Reproducer</li>
+    <li>Select Send to Reproducer</li>
+</ol>
