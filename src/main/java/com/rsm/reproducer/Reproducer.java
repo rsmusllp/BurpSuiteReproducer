@@ -17,7 +17,7 @@
     public class Reproducer implements BurpExtension
     {
         private MontoyaApi api;
-        private static final String VERSION = "1.1";
+        private static final String VERSION = "1.2";
         private static final String EXTENSION_NAME = "Reproducer";
         ReproducerTab tab;
 
