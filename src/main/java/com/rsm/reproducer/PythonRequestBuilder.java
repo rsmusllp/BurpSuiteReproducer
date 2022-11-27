@@ -112,12 +112,12 @@ public class PythonRequestBuilder {
 
     private BodyType processBody(String prefix, StringBuilder py,
                                  HttpRequest request) {
-        if (request.body().length == 0) return null;
+        if (request.body().length() == 0) return null;
         py.append('\n').append(prefix);
         ContentType contentType = request.contentType();
         if (contentType == ContentType.JSON) {
             try {
-                JsonElement rootNode = new Gson().fromJson(byteSliceToString(request.body()), JsonElement.class);
+                JsonElement rootNode = new Gson().fromJson(byteSliceToString(request.body().getBytes()), JsonElement.class);
                 py.append("json=");
                 escapeJson(rootNode, py);
                 return BodyType.JSON;
@@ -141,7 +141,7 @@ public class PythonRequestBuilder {
             py.append(paramsJoin);
             py.append('}');
         } else {
-            escapeBytes(request.body(), py);
+            escapeBytes(request.body().getBytes(), py);
         }
         return BodyType.DATA;
     }

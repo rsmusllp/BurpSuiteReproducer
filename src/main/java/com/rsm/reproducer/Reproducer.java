@@ -17,7 +17,7 @@
     public class Reproducer implements BurpExtension
     {
         private MontoyaApi api;
-        private static final String VERSION = "1.1";
+        private static final String VERSION = "1.2";
         private static final String EXTENSION_NAME = "Reproducer";
         ReproducerTab tab;
 
@@ -25,7 +25,7 @@
         public void initialize(MontoyaApi api)
         {
             this.api = api;
-            api.misc().setExtensionName(EXTENSION_NAME);
+            api.extension().setName(EXTENSION_NAME);
             api.logging().logToOutput(" == " + EXTENSION_NAME + " version " + VERSION + " == ");
             api.logging().logToOutput("Simplifier and formatter of requests to aid in finding reproduction and proof of concept creation.");
             api.logging().logToOutput("Created by Micah Van Deusen, RSM US LLP.");

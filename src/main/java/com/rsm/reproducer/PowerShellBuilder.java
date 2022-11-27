@@ -133,7 +133,7 @@ public class PowerShellBuilder {
         this.hasBody = false;
         this.isBase64 = false;
         this.isStandard = false;
-        byte[] requestBody = request.body();
+        byte[] requestBody = request.body().getBytes();
         StringBuilder stringBuilder = new StringBuilder();
 
         if (requestBody.length > 0) {
