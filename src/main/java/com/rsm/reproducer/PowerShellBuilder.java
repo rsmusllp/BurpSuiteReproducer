@@ -1,7 +1,7 @@
 package com.rsm.reproducer;
 
 import burp.api.montoya.MontoyaApi;
-import burp.api.montoya.http.message.headers.HttpHeader;
+import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.params.HttpParameter;
 import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;

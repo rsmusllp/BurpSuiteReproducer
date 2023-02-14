@@ -2,8 +2,8 @@ package com.rsm.reproducer;
 
 import burp.api.montoya.MontoyaApi;
 import burp.api.montoya.http.HttpService;
+import burp.api.montoya.http.message.HttpHeader;
 import burp.api.montoya.http.message.HttpRequestResponse;
-import burp.api.montoya.http.message.headers.HttpHeader;
 import burp.api.montoya.http.message.params.HttpParameter;
 import burp.api.montoya.http.message.params.HttpParameterType;
 import burp.api.montoya.http.message.params.ParsedHttpParameter;
@@ -81,18 +81,18 @@ public class ReproducerTab {
         originalEditorDefault = HttpRequestResponse.httpRequestResponse(
                 HttpRequest.httpRequest(HttpService.httpService("example.org", true), "Select a request first."),
                 HttpResponse.httpResponse("Select a request first."));
-        originalRequestEditor.setRequest(originalEditorDefault.httpRequest());
-        originalResponseEditor.setResponse(originalEditorDefault.httpResponse());
+        originalRequestEditor.setRequest(originalEditorDefault.request());
+        originalResponseEditor.setResponse(originalEditorDefault.response());
         analyzeEditorDefault = HttpRequestResponse.httpRequestResponse(
                 HttpRequest.httpRequest(HttpService.httpService("example.org", true), "Select an analysis test first."),
                 HttpResponse.httpResponse("Select an analysis test first."));
-        analyzeRequestEditor.setRequest(analyzeEditorDefault.httpRequest());
-        analyzeResponseEditor.setResponse(analyzeEditorDefault.httpResponse());
+        analyzeRequestEditor.setRequest(analyzeEditorDefault.request());
+        analyzeResponseEditor.setResponse(analyzeEditorDefault.response());
         simplifiedEditorDefault = HttpRequestResponse.httpRequestResponse(
                 HttpRequest.httpRequest(HttpService.httpService("example.org", true), "Click \"Create Simplified Request\" first."),
                 HttpResponse.httpResponse("Click \"Create Simplified Request\" first."));
-        simplifiedRequestEditor.setRequest(simplifiedEditorDefault.httpRequest());
-        simplifiedResponseEditor.setResponse(simplifiedEditorDefault.httpResponse());
+        simplifiedRequestEditor.setRequest(simplifiedEditorDefault.request());
+        simplifiedResponseEditor.setResponse(simplifiedEditorDefault.response());
 
         // Create table models
         requestSelectorTableModel = new DefaultTableModel(null, REQUEST_SELECTOR_HEADERS) {
@@ -164,15 +164,15 @@ public class ReproducerTab {
             if (!e.getValueIsAdjusting() && requestSelectorTable.getSelectedRow() >= 0) {
                 int modelRow = requestSelectorTable.convertRowIndexToModel(requestSelectorTable.getSelectedRow());
                 HttpRequestResponse hrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 0);
-                originalRequestEditor.setRequest(hrr.httpRequest());
-                originalResponseEditor.setResponse(hrr.httpResponse());
+                originalRequestEditor.setRequest(hrr.request());
+                originalResponseEditor.setResponse(hrr.response());
 
                 HttpRequestResponse simplifiedHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 1);
-                simplifiedRequestEditor.setRequest(simplifiedHrr.httpRequest());
-                simplifiedResponseEditor.setResponse(simplifiedHrr.httpResponse());
+                simplifiedRequestEditor.setRequest(simplifiedHrr.request());
+                simplifiedResponseEditor.setResponse(simplifiedHrr.response());
 
-                analyzeRequestEditor.setRequest(analyzeEditorDefault.httpRequest());
-                analyzeResponseEditor.setResponse(analyzeEditorDefault.httpResponse());
+                analyzeRequestEditor.setRequest(analyzeEditorDefault.request());
+                analyzeResponseEditor.setResponse(analyzeEditorDefault.response());
 
                 analyzeTable.setModel((DefaultTableModel) requestSelectorTableModel.getValueAt(modelRow, 2));
                 analyzeTable.removeColumn(analyzeTable.getColumnModel().getColumn(0));
@@ -207,11 +207,11 @@ public class ReproducerTab {
             if (!e.getValueIsAdjusting() && analyzeTable.getSelectedRow() >= 0) {
                 int modelRow = analyzeTable.convertRowIndexToModel(analyzeTable.getSelectedRow());
                 HttpRequestResponse hrr = (HttpRequestResponse) analyzeTable.getModel().getValueAt(modelRow, 0);
-                analyzeRequestEditor.setRequest(hrr.httpRequest());
-                if (hrr.httpResponse() == null) {
+                analyzeRequestEditor.setRequest(hrr.request());
+                if (hrr.response() == null) {
                     analyzeResponseEditor.setResponse(HttpResponse.httpResponse("Click the \"Analyze\" button first."));
                 } else {
-                    analyzeResponseEditor.setResponse(hrr.httpResponse());
+                    analyzeResponseEditor.setResponse(hrr.response());
                 }
             }
         });
@@ -225,10 +225,10 @@ public class ReproducerTab {
                     for (int i = 0; i < analyzeTableModel.getRowCount(); i++) {
                         progressBar.setValue((100 * i) / analyzeTableModel.getRowCount());
                         HttpRequestResponse analyzeHrr = (HttpRequestResponse) analyzeTableModel.getValueAt(i, 0);
-                        HttpRequestResponse updatedAnalyzeHrr = api.http().issueRequest(analyzeHrr.httpRequest());
+                        HttpRequestResponse updatedAnalyzeHrr = api.http().sendRequest(analyzeHrr.request());
                         analyzeTableModel.setValueAt(updatedAnalyzeHrr, i, 0);
-                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.httpResponse().statusCode(), i, 5);
-                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.httpResponse().body().length(), i, 6);
+                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.response().statusCode(), i, 5);
+                        analyzeTableModel.setValueAt(updatedAnalyzeHrr.response().body().length(), i, 6);
                     }
                     progressBar.setValue(100);
                     return null;
@@ -275,7 +275,7 @@ public class ReproducerTab {
                     int modelRow = requestSelectorTable.convertRowIndexToModel(requestSelectorTable.getSelectedRow());
                     HttpRequestResponse simplifiedHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 1);
                     PowerShellBuilder psb = new PowerShellBuilder(api);
-                    StringSelection stringSelection = new StringSelection(psb.build(simplifiedHrr.httpRequest()).toString());
+                    StringSelection stringSelection = new StringSelection(psb.build(simplifiedHrr.request()).toString());
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(stringSelection, null);
                     return null;
@@ -302,7 +302,7 @@ public class ReproducerTab {
                     int modelRow = requestSelectorTable.convertRowIndexToModel(requestSelectorTable.getSelectedRow());
                     HttpRequestResponse simplifiedHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 1);
                     JavaScriptRequestBuilder jrb = new JavaScriptRequestBuilder(api);
-                    StringSelection stringSelection = new StringSelection(jrb.build(simplifiedHrr.httpRequest()).toString());
+                    StringSelection stringSelection = new StringSelection(jrb.build(simplifiedHrr.request()).toString());
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(stringSelection, null);
                     return null;
@@ -329,7 +329,7 @@ public class ReproducerTab {
                     int modelRow = requestSelectorTable.convertRowIndexToModel(requestSelectorTable.getSelectedRow());
                     HttpRequestResponse simplifiedHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 1);
                     PythonRequestBuilder prb = new PythonRequestBuilder(api);
-                    StringSelection stringSelection = new StringSelection(prb.build(simplifiedHrr.httpRequest()).toString());
+                    StringSelection stringSelection = new StringSelection(prb.build(simplifiedHrr.request()).toString());
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(stringSelection, null);
                     return null;
@@ -356,12 +356,12 @@ public class ReproducerTab {
                 DefaultTableModel analyzeTableModel = (DefaultTableModel) requestSelectorTableModel.getValueAt(modelRow, 2);
                 analyzeTableModel.setRowCount(0);
                 requestSelectorTableModel.removeRow(modelRow);
-                originalRequestEditor.setRequest(originalEditorDefault.httpRequest());
-                originalResponseEditor.setResponse(originalEditorDefault.httpResponse());
-                analyzeRequestEditor.setRequest(analyzeEditorDefault.httpRequest());
-                analyzeResponseEditor.setResponse(analyzeEditorDefault.httpResponse());
-                simplifiedRequestEditor.setRequest(simplifiedEditorDefault.httpRequest());
-                simplifiedResponseEditor.setResponse(simplifiedEditorDefault.httpResponse());
+                originalRequestEditor.setRequest(originalEditorDefault.request());
+                originalResponseEditor.setResponse(originalEditorDefault.response());
+                analyzeRequestEditor.setRequest(analyzeEditorDefault.request());
+                analyzeResponseEditor.setResponse(analyzeEditorDefault.response());
+                simplifiedRequestEditor.setRequest(simplifiedEditorDefault.request());
+                simplifiedResponseEditor.setResponse(simplifiedEditorDefault.response());
             } catch (Exception ex) {
                 ex.printStackTrace(api.logging().error());
             }
@@ -374,12 +374,12 @@ public class ReproducerTab {
                     analyzeTableModel.setRowCount(0);
                 }
                 requestSelectorTableModel.setRowCount(0);
-                originalRequestEditor.setRequest(originalEditorDefault.httpRequest());
-                originalResponseEditor.setResponse(originalEditorDefault.httpResponse());
-                analyzeRequestEditor.setRequest(analyzeEditorDefault.httpRequest());
-                analyzeResponseEditor.setResponse(analyzeEditorDefault.httpResponse());
-                simplifiedRequestEditor.setRequest(simplifiedEditorDefault.httpRequest());
-                simplifiedResponseEditor.setResponse(simplifiedEditorDefault.httpResponse());
+                originalRequestEditor.setRequest(originalEditorDefault.request());
+                originalResponseEditor.setResponse(originalEditorDefault.response());
+                analyzeRequestEditor.setRequest(analyzeEditorDefault.request());
+                analyzeResponseEditor.setResponse(analyzeEditorDefault.response());
+                simplifiedRequestEditor.setRequest(simplifiedEditorDefault.request());
+                simplifiedResponseEditor.setResponse(simplifiedEditorDefault.response());
             } catch (Exception ex) {
                 ex.printStackTrace(api.logging().error());
             }
@@ -424,11 +424,11 @@ public class ReproducerTab {
                 HttpRequestResponse originalHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 0);
                 for (int i = 0; i < analyzeTableModel.getRowCount(); i++) {
                     HttpRequestResponse analyzeHrr = (HttpRequestResponse) analyzeTableModel.getValueAt(i, 0);
-                    if (analyzeHrr.httpResponse() == null) {
+                    if (analyzeHrr.response() == null) {
                         JOptionPane.showMessageDialog(new JFrame(), "Analysis needs to be done before being able to perform this action.", "Error", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    if (analyzeHrr.httpResponse().statusCode() == originalHrr.httpResponse().statusCode()) {
+                    if (analyzeHrr.response().statusCode() == originalHrr.response().statusCode()) {
                         analyzeTableModel.setValueAt(false, i, 4);
                     } else {
                         analyzeTableModel.setValueAt(true, i, 4);
@@ -446,11 +446,11 @@ public class ReproducerTab {
                 HttpRequestResponse originalHrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 0);
                 for (int i = 0; i < analyzeTableModel.getRowCount(); i++) {
                     HttpRequestResponse analyzeHrr = (HttpRequestResponse) analyzeTableModel.getValueAt(i, 0);
-                    if (analyzeHrr.httpResponse() == null) {
+                    if (analyzeHrr.response() == null) {
                         JOptionPane.showMessageDialog(new JFrame(), "Analysis needs to be done before being able to perform this action.", "Error", JOptionPane.ERROR_MESSAGE);
                         break;
                     }
-                    if (analyzeHrr.httpResponse().body().length() == originalHrr.httpResponse().body().length()) {
+                    if (analyzeHrr.response().body().length() == originalHrr.response().body().length()) {
                         analyzeTableModel.setValueAt(false, i, 4);
                     } else {
                         analyzeTableModel.setValueAt(true, i, 4);
@@ -475,7 +475,7 @@ public class ReproducerTab {
         int modelRow = requestSelectorTable.convertRowIndexToModel(requestSelectorTable.getSelectedRow());
         HttpRequestResponse hrr = (HttpRequestResponse) requestSelectorTableModel.getValueAt(modelRow, 0);
         DefaultTableModel analyzeTableModel = (DefaultTableModel) requestSelectorTableModel.getValueAt(modelRow, 2);
-        HttpRequest simplifiedRequest = hrr.httpRequest();
+        HttpRequest simplifiedRequest = hrr.request();
 
         progressBar.setValue(50);
         for (int i = 0; i < analyzeTableModel.getRowCount(); i++) {
@@ -496,16 +496,16 @@ public class ReproducerTab {
                         paramsToRemove.add(HttpParameter.cookieParameter(name, value));
                         break;
                     case "HEADER":
-                        simplifiedRequest = simplifiedRequest.removeHeader(HttpHeader.httpHeader(name, value));
+                        simplifiedRequest = simplifiedRequest.withRemovedHeader(HttpHeader.httpHeader(name, value));
                         break;
                 }
             }
         }
 
         simplifiedRequest = simplifiedRequest.withRemovedParameters(paramsToRemove);
-        HttpRequestResponse simplifiedHrr = api.http().issueRequest(simplifiedRequest);
-        simplifiedRequestEditor.setRequest(simplifiedHrr.httpRequest());
-        simplifiedResponseEditor.setResponse(simplifiedHrr.httpResponse());
+        HttpRequestResponse simplifiedHrr = api.http().sendRequest(simplifiedRequest);
+        simplifiedRequestEditor.setRequest(simplifiedHrr.request());
+        simplifiedResponseEditor.setResponse(simplifiedHrr.response());
         hrrTabPane.setSelectedComponent(simplifiedRequestViewer.getParent());
 
         requestSelectorTableModel.setValueAt(simplifiedHrr, modelRow, 1);
@@ -525,13 +525,13 @@ public class ReproducerTab {
 
     // Used by "Send to Reproducer" to load the requests to select from
     public void addSelectionRequest(HttpRequestResponse hrr) {
-        HttpRequest request = hrr.httpRequest();
-        HttpResponse response = hrr.httpResponse();
+        HttpRequest request = hrr.request();
+        HttpResponse response = hrr.response();
 
         // The response may not exist if it came from a message editor
         if (response == null) {
-            hrr = api.http().issueRequest(request);
-            response = hrr.httpResponse();
+            hrr = api.http().sendRequest(request);
+            response = hrr.response();
         }
 
         // Create sub-table for analysis data
@@ -547,8 +547,8 @@ public class ReproducerTab {
         };
 
         // Parse headers/cookies/parameters into the sub-table
-        List<HttpHeader> headers = hrr.httpRequest().headers();
-        List<ParsedHttpParameter> parameters = hrr.httpRequest().parameters().stream().filter(p -> p.type() == HttpParameterType.COOKIE || p.type() == HttpParameterType.BODY || p.type() == HttpParameterType.URL).collect(Collectors.toList());
+        List<HttpHeader> headers = hrr.request().headers();
+        List<ParsedHttpParameter> parameters = hrr.request().parameters().stream().filter(p -> p.type() == HttpParameterType.COOKIE || p.type() == HttpParameterType.BODY || p.type() == HttpParameterType.URL).collect(Collectors.toList());
 
         for (ParsedHttpParameter param : parameters) {
             HttpRequest modifiedRequest = request.withRemovedParameters(param);
@@ -558,7 +558,7 @@ public class ReproducerTab {
         for (HttpHeader header : headers.subList(1, headers.size())) {
             // HTTP 1.1 requires the host header and cookies are handled separately so ignore them
             if (!header.name().equalsIgnoreCase("host") && !header.name().equalsIgnoreCase("cookie")) {
-                HttpRequest modifiedRequest = request.removeHeader(header);
+                HttpRequest modifiedRequest = request.withRemovedHeader(header);
                 HttpRequestResponse modifiedHrr = HttpRequestResponse.httpRequestResponse(modifiedRequest, null);
 
                 StringJoiner analyzeSupportMessage = new StringJoiner("\n");
@@ -586,11 +586,11 @@ public class ReproducerTab {
             }
         }
         StringJoiner requestSupportMessage = new StringJoiner("\n");
-        if (!PowerShellBuilder.SUPPORTED_METHODS.contains(hrr.httpRequest().method().toUpperCase())) {
-            requestSupportMessage.add(hrr.httpRequest().method() + " is unsupported in PowerShell");
+        if (!PowerShellBuilder.SUPPORTED_METHODS.contains(hrr.request().method().toUpperCase())) {
+            requestSupportMessage.add(hrr.request().method() + " is unsupported in PowerShell");
         }
-        if (!PythonRequestBuilder.SUPPORTED_METHODS.contains(hrr.httpRequest().method().toUpperCase())) {
-            requestSupportMessage.add(hrr.httpRequest().method() + " is unsupported in Python Requests");
+        if (!PythonRequestBuilder.SUPPORTED_METHODS.contains(hrr.request().method().toUpperCase())) {
+            requestSupportMessage.add(hrr.request().method() + " is unsupported in Python Requests");
         }
 
         requestSelectorTableModel.addRow(new Object[]{hrr, simplifiedEditorDefault, analyzeTableModel, request.method(), request.url(), response.statusCode(), response.body().length(), requestSupportMessage.toString()});

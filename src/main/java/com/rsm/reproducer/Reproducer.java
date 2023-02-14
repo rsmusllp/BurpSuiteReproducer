@@ -17,7 +17,7 @@
     public class Reproducer implements BurpExtension
     {
         private MontoyaApi api;
-        private static final String VERSION = "1.2";
+        private static final String VERSION = "1.3";
         private static final String EXTENSION_NAME = "Reproducer";
         ReproducerTab tab;
 
@@ -41,7 +41,7 @@
         }
         private class ReproducerContextMenu implements ContextMenuItemsProvider
         {
-            public List<JMenuItem> provideMenuItems(ContextMenuEvent event)
+            public List<Component> provideMenuItems(ContextMenuEvent event)
             {
                 if (!event.selectedRequestResponses().isEmpty()) {
                     JMenuItem sendToReproducerMenuItem = new JMenuItem("Send to Reproducer");
@@ -61,7 +61,7 @@
                     });
                     JMenuItem copyPowerShellMenuItem = new JMenuItem("Copy as PowerShell command");
                     copyPowerShellMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.selectedRequestResponses().get(0).httpRequest();
+                        HttpRequest request = event.selectedRequestResponses().get(0).request();
                         PowerShellBuilder prb = new PowerShellBuilder(api);
                         StringSelection stringSelection = new StringSelection(prb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -69,7 +69,7 @@
                     });
                     JMenuItem copyPythonRequestsMenuItem = new JMenuItem("Copy as Python Requests command");
                     copyPythonRequestsMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.selectedRequestResponses().get(0).httpRequest();
+                        HttpRequest request = event.selectedRequestResponses().get(0).request();
                         PythonRequestBuilder prb = new PythonRequestBuilder(api);
                         StringSelection stringSelection = new StringSelection(prb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -77,7 +77,7 @@
                     });
                     JMenuItem copyJavaScriptFetchMenuItem = new JMenuItem("Copy as JavaScript Fetch command");
                     copyJavaScriptFetchMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.selectedRequestResponses().get(0).httpRequest();
+                        HttpRequest request = event.selectedRequestResponses().get(0).request();
                         JavaScriptRequestBuilder jrb = new JavaScriptRequestBuilder(api);
                         StringSelection stringSelection = new StringSelection(jrb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -92,7 +92,7 @@
                         // This function may make HTTP calls, so run in a thread
                         new Thread(() -> {
                             try {
-                                tab.addSelectionRequest(event.messageEditorRequestResponse().get().getRequestResponse());
+                                tab.addSelectionRequest(event.messageEditorRequestResponse().get().requestResponse());
                             }
                             catch(Exception ex)
                             {
@@ -102,7 +102,7 @@
                     });
                     JMenuItem copyPowerShellMenuItem = new JMenuItem("Copy as PowerShell command");
                     copyPowerShellMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.messageEditorRequestResponse().get().getRequestResponse().httpRequest();
+                        HttpRequest request = event.messageEditorRequestResponse().get().requestResponse().request();
                         PowerShellBuilder prb = new PowerShellBuilder(api);
                         StringSelection stringSelection = new StringSelection(prb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -110,7 +110,7 @@
                     });
                     JMenuItem copyPythonRequestsMenuItem = new JMenuItem("Copy as Python Requests command");
                     copyPythonRequestsMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.messageEditorRequestResponse().get().getRequestResponse().httpRequest();
+                        HttpRequest request = event.messageEditorRequestResponse().get().requestResponse().request();
                         PythonRequestBuilder prb = new PythonRequestBuilder(api);
                         StringSelection stringSelection = new StringSelection(prb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
@@ -118,7 +118,7 @@
                     });
                     JMenuItem copyJavaScriptFetchMenuItem = new JMenuItem("Copy as JavaScript Fetch command");
                     copyJavaScriptFetchMenuItem.addActionListener(e -> {
-                        HttpRequest request = event.messageEditorRequestResponse().get().getRequestResponse().httpRequest();
+                        HttpRequest request = event.messageEditorRequestResponse().get().requestResponse().request();
                         JavaScriptRequestBuilder jrb = new JavaScriptRequestBuilder(api);
                         StringSelection stringSelection = new StringSelection(jrb.build(request).toString());
                         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
