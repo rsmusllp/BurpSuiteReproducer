@@ -47,8 +47,8 @@ public class ReproducerTab {
     private final DefaultTableModel requestSelectorTableModel;
 
 
-    private static final Object[] REQUEST_SELECTOR_HEADERS = new Object[]{"Original HRR", "Simplified HRR", "Analyze Table", "Method", "URL", "Response Code", "Length", "\u26A0\uFE0F"};
-    private static final Object[] ANALYZE_HEADERS = new Object[]{"Analyze HRR", "Type", "Name", "Value", "Include", "Response Code", "Length", "\u26A0\uFE0F"};
+    private static final Object[] REQUEST_SELECTOR_HEADERS = new Object[]{"Original HRR", "Simplified HRR", "Analyze Table", "Method", "URL", "Response Code", "Length", "Warnings"};
+    private static final Object[] ANALYZE_HEADERS = new Object[]{"Analyze HRR", "Type", "Name", "Value", "Include", "Response Code", "Length", "Warnings"};
 
     MontoyaApi api;
 
@@ -129,7 +129,7 @@ public class ReproducerTab {
                     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                         super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                         if (value != null && !((String) value).isEmpty()) {
-                            this.setText("\u26A0\uFE0F");
+                            this.setText("...");
                             this.setToolTipText(value.toString());
                         } else {
                             this.setToolTipText(null);
@@ -144,14 +144,14 @@ public class ReproducerTab {
         requestSelectorTable.getColumnModel().getColumn(1).setPreferredWidth(700);
         requestSelectorTable.getColumnModel().getColumn(2).setPreferredWidth(200);
         requestSelectorTable.getColumnModel().getColumn(3).setPreferredWidth(150);
-        requestSelectorTable.getColumnModel().getColumn(4).setPreferredWidth(50);
+        requestSelectorTable.getColumnModel().getColumn(4).setPreferredWidth(100);
         analyzeTable.getColumnModel().getColumn(0).setPreferredWidth(100);
         analyzeTable.getColumnModel().getColumn(1).setPreferredWidth(300);
         analyzeTable.getColumnModel().getColumn(2).setPreferredWidth(300);
         analyzeTable.getColumnModel().getColumn(3).setPreferredWidth(100);
         analyzeTable.getColumnModel().getColumn(4).setPreferredWidth(150);
         analyzeTable.getColumnModel().getColumn(5).setPreferredWidth(100);
-        analyzeTable.getColumnModel().getColumn(6).setPreferredWidth(50);
+        analyzeTable.getColumnModel().getColumn(6).setPreferredWidth(100);
 
         // Only allow one row to be selected
         requestSelectorTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -182,7 +182,7 @@ public class ReproducerTab {
                             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                                 super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                                 if (value != null && !((String) value).isEmpty()) {
-                                    this.setText("\u26A0\uFE0F");
+                                    this.setText("...");
                                     this.setToolTipText(value.toString());
                                 } else {
                                     this.setToolTipText(null);

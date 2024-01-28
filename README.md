@@ -1,4 +1,4 @@
-# Burp Suite Request Simplification and PoC Builder (Reproducer)
+# Reproducer, Request Simplification and PoC Builder
 This extension aids in simplifying and formatting requests to aid in finding reproduction and proof of concept creation.
 
 # Installation
